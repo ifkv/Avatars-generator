@@ -1,4 +1,4 @@
-async function invertPaint() {
+async function placeAvatar() {
   figma.showUI(__html__, { visible: false })
   figma.ui.postMessage('people')
   const newBytes: Uint8Array = await new Promise((resolve, reject) => {
@@ -6,9 +6,10 @@ async function invertPaint() {
   })
   let imageHash = figma.createImage(newBytes).hash
   return { type: "IMAGE", scaleMode: "FILL", imageHash }
+
 }
 
-async function invertIfApplicable(node) {
+async function placeIfApplicable(node) {
   switch (node.type) {
     case 'RECTANGLE':
     case 'ELLIPSE':
@@ -17,15 +18,25 @@ async function invertIfApplicable(node) {
     case 'VECTOR':
     case 'TEXT': {
       const newFills = []
-      newFills.push(await invertPaint())  
+      newFills.push(await placeAvatar())
       node.fills = newFills
       break
     }
     default: {
-      console.log('Wrong type:', node.type)
+      let err = "Can't be applied to a " + node.type + '. Please select the available shape and run the plugin again'
+      return figma.closePlugin(err)
     }
   }
 }
 
-Promise.all(figma.currentPage.selection.map(selected => invertIfApplicable(selected)))
-       .then(() => figma.closePlugin())
+if (figma.currentPage.selection.length > 1) {
+		figma.closePlugin('You can only choose one shape');
+	}
+  else if (figma.currentPage.selection.length == 0)
+  {
+    figma.closePlugin('You need to select one shape');
+  }
+  else {
+    Promise.all(figma.currentPage.selection.map(selected => placeIfApplicable(selected)))
+           .then(() => figma.closePlugin())
+  }

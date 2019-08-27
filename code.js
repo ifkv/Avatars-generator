@@ -6,7 +6,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-function invertPaint() {
+function placeAvatar() {
     return __awaiter(this, void 0, void 0, function* () {
         figma.showUI(__html__, { visible: false });
         figma.ui.postMessage('people');
@@ -17,7 +17,7 @@ function invertPaint() {
         return { type: "IMAGE", scaleMode: "FILL", imageHash };
     });
 }
-function invertIfApplicable(node) {
+function placeIfApplicable(node) {
     return __awaiter(this, void 0, void 0, function* () {
         switch (node.type) {
             case 'RECTANGLE':
@@ -27,15 +27,24 @@ function invertIfApplicable(node) {
             case 'VECTOR':
             case 'TEXT': {
                 const newFills = [];
-                newFills.push(yield invertPaint());
+                newFills.push(yield placeAvatar());
                 node.fills = newFills;
                 break;
             }
             default: {
-                console.log('Wrong type:', node.type);
+                let err = "Can't be applied to a " + node.type + '. Please select the available object and run the plugin again';
+                return figma.closePlugin(err);
             }
         }
     });
 }
-Promise.all(figma.currentPage.selection.map(selected => invertIfApplicable(selected)))
-    .then(() => figma.closePlugin());
+if (figma.currentPage.selection.length > 1) {
+    figma.closePlugin('You can only choose one object');
+}
+else if (figma.currentPage.selection.length == 0) {
+    figma.closePlugin('You can only choose one object');
+}
+else {
+    Promise.all(figma.currentPage.selection.map(selected => placeIfApplicable(selected)))
+        .then(() => figma.closePlugin());
+}
