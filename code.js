@@ -32,17 +32,17 @@ function placeIfApplicable(node) {
                 break;
             }
             default: {
-                let err = "Can't be applied to a " + node.type + '. Please select the available object and run the plugin again';
+                let err = "Can't be applied to a " + node.type + '. Please select the available shape and run the plugin again';
                 return figma.closePlugin(err);
             }
         }
     });
 }
 if (figma.currentPage.selection.length > 1) {
-    figma.closePlugin('You can only choose one object');
+    figma.closePlugin('You can only choose one shape');
 }
 else if (figma.currentPage.selection.length == 0) {
-    figma.closePlugin('You can only choose one object');
+    figma.closePlugin('You need to select one shape');
 }
 else {
     Promise.all(figma.currentPage.selection.map(selected => placeIfApplicable(selected)))
