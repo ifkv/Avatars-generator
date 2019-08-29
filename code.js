@@ -13,7 +13,6 @@ function placeAvatar() {
         const newBytes = yield new Promise((resolve, reject) => {
             figma.ui.onmessage = value => resolve(value);
         });
-        console.log('newBytes done', newBytes);
         let imageHash = figma.createImage(newBytes).hash;
         return { type: "IMAGE", scaleMode: "FILL", imageHash };
     });
@@ -28,7 +27,6 @@ function placeIfApplicable(node) {
             case 'VECTOR':
             case 'TEXT': {
                 const newFills = [];
-                console.log(node);
                 newFills.push(yield placeAvatar());
                 node.fills = newFills;
                 break;

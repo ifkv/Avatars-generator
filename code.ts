@@ -4,7 +4,6 @@ async function placeAvatar() {
   const newBytes: Uint8Array = await new Promise((resolve, reject) => {
     figma.ui.onmessage = value => resolve(value as Uint8Array)
   })
-  console.log('newBytes done', newBytes)
   let imageHash = figma.createImage(newBytes).hash
   return { type: "IMAGE", scaleMode: "FILL", imageHash }
 }
@@ -18,7 +17,6 @@ async function placeIfApplicable(node) {
     case 'VECTOR':
     case 'TEXT': {
       const newFills = []
-      console.log(node)
       newFills.push(await placeAvatar())
       node.fills = newFills
       break
