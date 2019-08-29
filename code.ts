@@ -29,7 +29,7 @@ async function placeIfApplicable(node) {
 }
 
 (async () => {
-  if (figma.currentPage.selection.length > 0 && figma.currentPage.selection.length < 20) {
+  if (figma.currentPage.selection.length > 0 && figma.currentPage.selection.length < 21) {
     for (const node of figma.currentPage.selection)
     {
       await placeIfApplicable(node);
