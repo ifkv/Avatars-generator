@@ -1,12 +1,12 @@
 async function placeAvatar() {
   figma.showUI(__html__, { visible: false })
-  figma.ui.postMessage('people')
+  figma.ui.postMessage('')
   const newBytes: Uint8Array = await new Promise((resolve, reject) => {
     figma.ui.onmessage = value => resolve(value as Uint8Array)
   })
+  console.log('newBytes done', newBytes)
   let imageHash = figma.createImage(newBytes).hash
   return { type: "IMAGE", scaleMode: "FILL", imageHash }
-
 }
 
 async function placeIfApplicable(node) {
@@ -18,6 +18,7 @@ async function placeIfApplicable(node) {
     case 'VECTOR':
     case 'TEXT': {
       const newFills = []
+      console.log(node)
       newFills.push(await placeAvatar())
       node.fills = newFills
       break
@@ -29,14 +30,15 @@ async function placeIfApplicable(node) {
   }
 }
 
-if (figma.currentPage.selection.length > 1) {
-		figma.closePlugin('You can only choose one shape');
-	}
-  else if (figma.currentPage.selection.length == 0)
-  {
-    figma.closePlugin('You need to select one shape');
-  }
-  else {
-    Promise.all(figma.currentPage.selection.map(selected => placeIfApplicable(selected)))
-           .then(() => figma.closePlugin())
-  }
+(async () => {
+  if (figma.currentPage.selection.length) {
+      for (const node of figma.currentPage.selection) {
+        await placeIfApplicable(node);
+      }
+      figma.closePlugin();
+  	}
+    else if (figma.currentPage.selection.length == 0)
+    {
+      figma.closePlugin('You need to select at least one shape');
+    }
+})()

@@ -9,10 +9,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 function placeAvatar() {
     return __awaiter(this, void 0, void 0, function* () {
         figma.showUI(__html__, { visible: false });
-        figma.ui.postMessage('people');
+        figma.ui.postMessage('');
         const newBytes = yield new Promise((resolve, reject) => {
             figma.ui.onmessage = value => resolve(value);
         });
+        console.log('newBytes done', newBytes);
         let imageHash = figma.createImage(newBytes).hash;
         return { type: "IMAGE", scaleMode: "FILL", imageHash };
     });
@@ -27,6 +28,7 @@ function placeIfApplicable(node) {
             case 'VECTOR':
             case 'TEXT': {
                 const newFills = [];
+                console.log(node);
                 newFills.push(yield placeAvatar());
                 node.fills = newFills;
                 break;
@@ -38,13 +40,14 @@ function placeIfApplicable(node) {
         }
     });
 }
-if (figma.currentPage.selection.length > 1) {
-    figma.closePlugin('You can only choose one shape');
-}
-else if (figma.currentPage.selection.length == 0) {
-    figma.closePlugin('You need to select one shape');
-}
-else {
-    Promise.all(figma.currentPage.selection.map(selected => placeIfApplicable(selected)))
-        .then(() => figma.closePlugin());
-}
+(() => __awaiter(this, void 0, void 0, function* () {
+    if (figma.currentPage.selection.length) {
+        for (const node of figma.currentPage.selection) {
+            yield placeIfApplicable(node);
+        }
+        figma.closePlugin();
+    }
+    else if (figma.currentPage.selection.length == 0) {
+        figma.closePlugin('You need to select at least one shape');
+    }
+}))();
