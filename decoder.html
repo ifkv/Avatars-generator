@@ -19,7 +19,7 @@ async function encode(canvas, ctx, imageData) {
     const proxyurl = "https://figma-proxy.herokuapp.com/";
     const downloadedImg = await fetch(proxyurl+image_url);
 
-    await timeout(1000);
+    await timeout(1500);
     const imgBlob = await downloadedImg.blob()
     console.log(imgBlob)
     const url = URL.createObjectURL(imgBlob)
