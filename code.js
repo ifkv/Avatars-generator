@@ -39,7 +39,7 @@ function placeIfApplicable(node) {
     });
 }
 (() => __awaiter(this, void 0, void 0, function* () {
-    if (figma.currentPage.selection.length) {
+    if (figma.currentPage.selection.length > 0 && figma.currentPage.selection.length < 20) {
         for (const node of figma.currentPage.selection) {
             yield placeIfApplicable(node);
         }
@@ -47,5 +47,8 @@ function placeIfApplicable(node) {
     }
     else if (figma.currentPage.selection.length == 0) {
         figma.closePlugin('You need to select at least one shape');
+    }
+    else {
+        figma.closePlugin('You can choose up to 20 shapes at a time');
     }
 }))();

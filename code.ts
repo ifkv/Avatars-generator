@@ -29,14 +29,19 @@ async function placeIfApplicable(node) {
 }
 
 (async () => {
-  if (figma.currentPage.selection.length) {
-      for (const node of figma.currentPage.selection) {
-        await placeIfApplicable(node);
-      }
-      figma.closePlugin();
-  	}
-    else if (figma.currentPage.selection.length == 0)
+  if (figma.currentPage.selection.length > 0 && figma.currentPage.selection.length < 20) {
+    for (const node of figma.currentPage.selection)
+    {
+      await placeIfApplicable(node);
+    }
+    figma.closePlugin();
+  }
+  else if (figma.currentPage.selection.length == 0)
     {
       figma.closePlugin('You need to select at least one shape');
+    }
+  else
+    {
+      figma.closePlugin('You can choose up to 20 shapes at a time');
     }
 })()
